@@ -1,12 +1,9 @@
-name: deploy_to_dev
+name: deploy_to_prod
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-    paths:
-      - 'feature/*'
-
 jobs:
   deploy:
     name: "deploy bundle"
@@ -39,7 +36,7 @@ jobs:
       - shell: bash
         name: Run pipeline update
         run: |
-          databricks bundle run dab_project_job --refresh-all 2>&1 | tee output.log
+          databricks bundle run dagm_dabs_demo_job --refresh-all 2>&1 | tee output.log
         env:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
           DATABRICKS_BUNDLE_ENV: prod
