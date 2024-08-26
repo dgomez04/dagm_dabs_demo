@@ -1,0 +1,20 @@
+# The main job for dagm_dabs_demo.
+# This job runs dagm_dabs_demo_pipeline on a schedule.
+resources:
+  jobs:
+    dagm_dabs_demo_job:
+      name: dagm_dabs_demo_job
+
+      schedule:
+        quartz_cron_expression: '44 37 8 * * ?'
+        timezone_id: America/New_York
+
+      email_notifications:
+        on_failure:
+          - diego.gomez@databricks.com
+
+      tasks:
+        - task_key: refresh_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.dagm_dabs_demo_pipeline.id}
+        

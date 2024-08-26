@@ -1,0 +1,43 @@
+name: deploy_to_dev
+
+on:
+  push:
+    branches:
+      - 'feature/*'
+
+jobs:
+  deploy:
+    name: "deploy bundle"
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - uses: actions/checkout@v4 
+
+      - uses: databricks/setup-cli@main
+
+      - run: databricks bundle deploy
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_BUNDLE_ENV: dev
+
+  worflow_run:
+    name: "Job run for the workflow"
+    runs-on: ubuntu-latest
+    environment: dev
+
+    needs:
+      - deploy
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: databricks/setup-cli@main
+
+      - shell: bash
+        name: Run pipeline update
+        run: |
+          databricks bundle run dab_project_job --refresh-all 2>&1 | tee output.log
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_BUNDLE_ENV: dev
