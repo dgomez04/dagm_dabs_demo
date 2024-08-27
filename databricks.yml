@@ -29,7 +29,7 @@ targets:
   prod:
     # We use 'mode: production' to indicate this is a production deployment.
     # Doing so enables strict verification of the settings below.
-    mode: development
+    mode: production
     workspace:
       host: https://adb-948488571465551.11.azuredatabricks.net
       # We always use /Users/diego.gomez@databricks.com for all resources to make sure we only have a single copy.
