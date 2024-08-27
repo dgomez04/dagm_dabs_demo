@@ -3,12 +3,12 @@ resources:
   pipelines:
     dagm_dabs_demo_pipeline:
       name: dagm_dabs_demo_pipeline
-      target: dagm_dabs_demo_${bundle.environment}
-      catalog: dabs-demo-catalog
-      serverless: true
       libraries:
         - notebook:
             path: ../src/dlt_pipeline.ipynb
+      target: dagm_dabs_demo_${bundle.environment}
+      catalog: dabs-demo-catalog
+      serverless: true
 
       configuration:
         bundle.sourcePath: /Workspace/${workspace.file_path}/src
