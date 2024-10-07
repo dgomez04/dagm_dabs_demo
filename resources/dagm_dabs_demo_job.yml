@@ -17,4 +17,3 @@ resources:
         - task_key: refresh_pipeline
           pipeline_task:
             pipeline_id: ${resources.pipelines.dagm_dabs_demo_pipeline.id}
-        
