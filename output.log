@@ -1,4 +1,4 @@
-Run URL: https://adb-3623327267841015.15.azuredatabricks.net/?o=3623327267841015#job/48608754223274/run/5447149381834
+Run URL: https://adb-3623327267841015.15.azuredatabricks.net/?o=3623327267841015#job/48608754223274/run/1072236992158338
 
-2024-10-30 09:24:17 "[dev diego_gomez] dagm_dabs_demo_job" RUNNING 
-2024-10-30 09:25:19 "[dev diego_gomez] dagm_dabs_demo_job" TERMINATED SUCCESS 
+2024-10-31 10:11:20 "[dev diego_gomez] dagm_dabs_demo_job" RUNNING 
+2024-10-31 10:12:31 "[dev diego_gomez] dagm_dabs_demo_job" TERMINATED SUCCESS 
