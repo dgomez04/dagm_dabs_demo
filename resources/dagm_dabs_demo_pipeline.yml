@@ -8,7 +8,7 @@ resources:
             path: ../src/dlt_pipeline.ipynb
       target: dagm_dabs_demo_${bundle.environment}
       catalog: dev
-      serverless: true
+      serverless: true 
 
       configuration:
         bundle.sourcePath: /Workspace/${workspace.file_path}/src
