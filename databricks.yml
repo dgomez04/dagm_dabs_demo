@@ -17,7 +17,7 @@ targets:
     mode: development
     default: true
     workspace:
-      host: https://adb-8487760884965736.16.azuredatabricks.net/
+      host: https://adb-1574730715755665.5.azuredatabricks.net/
 
   ## Optionally, there could be a 'staging' target here.
   ## (See Databricks docs on CI/CD at https://docs.databricks.com/dev-tools/bundles/ci-cd.html.)
@@ -32,7 +32,7 @@ targets:
     # Doing so enables strict verification of the settings below.
     mode: production
     workspace:
-      host: https://adb-8487760884965736.16.azuredatabricks.net/
+      host: https://adb-1574730715755665.5.azuredatabricks.net/
       # We always use /Users/diego.gomez@databricks.com for all resources to make sure we only have a single copy.
       # If this path results in an error, please make sure you have a recent version of the CLI installed.
       root_path: /Users/diego.gomez@databricks.com/.bundle/${bundle.name}/${bundle.target}
