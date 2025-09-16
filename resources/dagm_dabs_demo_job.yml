@@ -25,4 +25,5 @@ targets:
       jobs: 
         dagm_dabs_demo_job: 
             run_as: 
-              service_principal_name: '9b72b70e-1ffd-4b38-ad7c-8f5562ffca7f'
+              service_principal_name: 'abb7ecab-5acf-4709-8245-9eb06431606d
+'
