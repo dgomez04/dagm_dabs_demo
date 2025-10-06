@@ -7,8 +7,10 @@ resources:
         - notebook:
             path: ../src/dlt_pipeline.ipynb
       target: dagm_dabs_demo_${bundle.environment}
-      catalog: ${bundle.environment}
+      catalog: dev
       serverless: true 
 
       configuration:
         bundle.sourcePath: ${workspace.file_path}/src
+        custom_param: "xyz"
+        source_table: "x"
