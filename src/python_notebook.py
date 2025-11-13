@@ -29,7 +29,7 @@ df_silver = (
     .withColumn("pct_change", F.col("daily_price_change") / F.col("PREVIOUS_CLOSE"))
 )
 
-df_silver.write.format("delta").mode("overwrite").saveAsTable("ns_demo_db.dagm.silver_yahoo_finance")
+df_silver.write.format("delta").mode("overwrite").saveAsTable("testing.dagm.silver_yahoo_finance")
 
 # COMMAND ----------
 
