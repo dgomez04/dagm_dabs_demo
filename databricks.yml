@@ -1,0 +1,35 @@
+bundle:
+  name: finance-business-pipeline
+
+
+
+# Importing the resources and other definitions on the resources folder
+include:
+  - resources/*.yml
+  
+
+# Targets a.k.a environments or workspaces
+targets:
+  dev:
+    default: true
+
+    workspace:
+      host: https://adb-3387107885099545.5.azuredatabricks.net
+
+  prod:
+    workspace:
+      host: https://adb-3387107885099545.5.azuredatabricks.net/
+
+    mode: production
+
+    # all workloads would be created and executed as the SP configured in the CI/CD pipeline
+    run_as:
+      user_name: ${workspace.current_user.userName}
+    
+    # Resource dynamic overwrite for prod: schedule attribute added
+    resources:
+      jobs:
+        finance_pipeline:
+          schedule: 
+            timezone_id: America/Los_Angeles
+            quartz_cron_expression: "0 0 3 * * ?"
