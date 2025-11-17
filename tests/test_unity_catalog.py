@@ -16,8 +16,6 @@ def test_silver_schema(spark):
 
     assert expected_columns.issubset(df.columns)
 
-    numeric_cols =_
-
 
 top_movers_table = "testing.dagm.yahoo_top_movers"
 

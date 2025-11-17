@@ -26,17 +26,3 @@ resources:
             - pypi:
                 package: databricks-sdk
 
-    finance_pipeline:
-      name: "[${bundle.target}] Finance Business Pipeline"
-      
-      permissions:
-        - group_name: users
-          level: CAN_VIEW
-        - group_name: users
-          level: CAN_MANAGE_RUN
-
-      tasks:
-        - task_key: process_yahoo_finance
-          notebook_task:
-            notebook_path: ../src/python_notebook.py
-
