@@ -18,11 +18,9 @@ resources:
       tasks:
         - task_key: run_unit_tests
           job_cluster_key: test_cluster
-          spark_python_task:
-            python_file: ../tests/run_tests.py
+          notebook_task:
+            notebook_path: ../tests/test_finance_pipeline.py
           libraries:
             - pypi:
                 package: pytest
-            - pypi:
-                package: databricks-sdk
 
