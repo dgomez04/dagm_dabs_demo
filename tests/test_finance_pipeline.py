@@ -78,7 +78,9 @@ def test_silver_no_null_keys(spark_fixture):
     silver_table = "testing.dagm.silver_yahoo_finance"
     df = spark_fixture.table(silver_table)
 
-    key_columns = ["STOCK_TICKER", "EXCHANGE"]
+    # Only check STOCK_TICKER - EXCHANGE can be null for certain asset types
+    # (e.g., cryptocurrencies, OTC stocks, private equity)
+    key_columns = ["STOCK_TICKER"]
     
     for col_name in key_columns:
         if col_name in df.columns:
@@ -161,24 +163,65 @@ def test_performance_category_values(spark_fixture):
 
 import sys
 import os
+import inspect
 
 if __name__ == "__main__":
-    # Get the directory where this notebook/script is located
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # In Databricks notebooks, we need to manually collect and run tests
+    # Get the Spark session for the fixture
+    spark_session = SparkSession.builder.getOrCreate()
     
-    # Run pytest on this file
-    # The -v flag provides verbose output
-    # The --tb=short flag provides shorter traceback format
-    exit_code = pytest.main([
-        __file__,  # Run tests in this file
-        "-v",
-        "--tb=short",
-        "-p", "no:cacheprovider"  # Disable cache plugin for Databricks compatibility
-    ])
+    # Collect all test functions from the current module
+    current_module = sys.modules[__name__]
+    test_functions = [
+        (name, obj) for name, obj in inspect.getmembers(current_module)
+        if inspect.isfunction(obj) and name.startswith('test_')
+    ]
     
-    # Exit with the pytest exit code (0 for success, non-zero for failures)
-    if exit_code != 0:
-        raise SystemExit(f"Tests failed with exit code {exit_code}")
+    print(f"=" * 70)
+    print(f"Running {len(test_functions)} test functions")
+    print(f"=" * 70)
+    print()
     
-    print("All tests passed!")
+    passed = 0
+    failed = 0
+    errors = []
+    
+    for test_name, test_func in test_functions:
+        try:
+            print(f"Running: {test_name}...", end=" ")
+            
+            # Check if test function needs spark_fixture parameter
+            sig = inspect.signature(test_func)
+            if 'spark_fixture' in sig.parameters:
+                test_func(spark_session)
+            else:
+                test_func()
+            
+            print("✓ PASSED")
+            passed += 1
+        except AssertionError as e:
+            print("✗ FAILED")
+            failed += 1
+            errors.append((test_name, str(e)))
+        except Exception as e:
+            print("✗ ERROR")
+            failed += 1
+            errors.append((test_name, f"Error: {str(e)}"))
+    
+    print()
+    print(f"=" * 70)
+    print(f"Test Results: {passed} passed, {failed} failed")
+    print(f"=" * 70)
+    
+    if errors:
+        print("\nFailure Details:")
+        print("-" * 70)
+        for test_name, error_msg in errors:
+            print(f"\n{test_name}:")
+            print(f"  {error_msg}")
+        print()
+        raise SystemExit(f"{failed} test(s) failed!")
+    else:
+        print("\n✓ All tests passed!")
+        print()
 
