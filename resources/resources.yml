@@ -7,7 +7,12 @@ resources:
         - task_key: run_unit_tests
           notebook_task:
             notebook_path: ../tests/test_finance_pipeline.py
-          libraries:
-            - pypi:
-                package: pytest
+          environment_key: test_env
+
+      environments:
+        - environment_key: test_env
+          spec:
+            client: "1"
+            dependencies:
+              - pytest
 
