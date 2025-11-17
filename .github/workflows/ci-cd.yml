@@ -24,30 +24,10 @@ jobs:
         env:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
-  unit_testing:
-    name: Unit Testing on Databricks
-    runs-on: ubuntu-latest
-    environment: prod_env
-    needs: deploy
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Databricks CLI
-        uses: databricks/setup-cli@main
-
-      - name: Run unit tests on Databricks cluster
-        run: databricks bundle run unit_tests --target prod
-        env:
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-
   run_job:
     name: Run Finance Pipeline
     runs-on: ubuntu-latest
-    # Only run job on push to main, not on PRs
-    if: github.event_name == 'push'
-    needs: unit_testing
+    needs: deploy
     environment: prod_env
 
     steps:
@@ -59,6 +39,24 @@ jobs:
 
       - name: Run finance pipeline
         run: databricks bundle run finance_pipeline --target prod
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+  unit_testing:
+    name: Data Quality Tests
+    runs-on: ubuntu-latest
+    environment: prod_env
+    needs: run_job
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Run data quality tests
+        run: databricks bundle run unit_tests --target prod
         env:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
