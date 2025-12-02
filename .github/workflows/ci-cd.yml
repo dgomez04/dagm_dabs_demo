@@ -63,7 +63,7 @@ jobs:
     name: Deploy to Dev Environment
     runs-on: ubuntu-latest
     needs: test
-    environment: dev_env
+    environment: dev
     if: github.event_name == 'pull_request'
 
     steps:
@@ -82,7 +82,7 @@ jobs:
     name: Run NYC Taxi Pipeline (Dev)
     runs-on: ubuntu-latest
     needs: deploy_dev
-    environment: dev_env
+    environment: dev
     if: github.event_name == 'pull_request'
 
     steps:
@@ -101,7 +101,7 @@ jobs:
     name: Deploy to Prod Environment
     runs-on: ubuntu-latest
     needs: test
-    environment: prod_env
+    environment: prod
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -120,7 +120,7 @@ jobs:
     name: Run NYC Taxi Pipeline (Prod)
     runs-on: ubuntu-latest
     needs: deploy_prod
-    environment: prod_env
+    environment: prod
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
