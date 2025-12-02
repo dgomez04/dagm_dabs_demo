@@ -1,5 +1,5 @@
 bundle:
-  name: finance-business-pipeline
+  name: nyc-taxi-pipeline
 
 
 
@@ -12,13 +12,18 @@ include:
 targets:
   dev:
     default: true
+    mode: development
 
     workspace:
-      host: https://adb-3387107885099545.5.azuredatabricks.net
+      host: https://dbc-bef36088-f711.cloud.databricks.com/
+    
+    # Dev environment uses default parameters from taxi_pipeline.yml
+    # No schedule in dev - manual execution only
 
   prod:
     workspace:
-      host: https://adb-3387107885099545.5.azuredatabricks.net/
+      host: https://dbc-bef36088-f711.cloud.databricks.com/
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
 
     mode: production
 
@@ -29,7 +34,7 @@ targets:
     # Resource dynamic overwrite for prod: schedule attribute added
     resources:
       jobs:
-        finance_pipeline:
+        taxi_pipeline:
           schedule: 
             timezone_id: America/Los_Angeles
             quartz_cron_expression: "0 0 3 * * ?"
