@@ -12,9 +12,13 @@ include:
 targets:
   dev:
     default: true
+    mode: development
 
     workspace:
       host: https://adb-3387107885099545.5.azuredatabricks.net
+    
+    # Dev environment uses default parameters from taxi_pipeline.yml
+    # No schedule in dev - manual execution only
 
   prod:
     workspace:

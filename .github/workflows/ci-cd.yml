@@ -59,12 +59,12 @@ jobs:
           name: coverage-report
           path: coverage.json
 
-  deploy:
-    name: Deploy Bundle
+  deploy_dev:
+    name: Deploy to Dev Environment
     runs-on: ubuntu-latest
     needs: test
-    environment: prod_env
-    if: github.ref == 'refs/heads/main'
+    environment: dev_env
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout repository
@@ -73,17 +73,55 @@ jobs:
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
 
-      - name: Deploy bundle
+      - name: Deploy bundle to dev
+        run: databricks bundle deploy --target dev
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+  run_job_dev:
+    name: Run NYC Taxi Pipeline (Dev)
+    runs-on: ubuntu-latest
+    needs: deploy_dev
+    environment: dev_env
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Run taxi pipeline in dev
+        run: databricks bundle run taxi_pipeline --target dev
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+  deploy_prod:
+    name: Deploy to Prod Environment
+    runs-on: ubuntu-latest
+    needs: test
+    environment: prod_env
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Deploy bundle to prod
         run: databricks bundle deploy --target prod
         env:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
-  run_job:
-    name: Run NYC Taxi Pipeline
+  run_job_prod:
+    name: Run NYC Taxi Pipeline (Prod)
     runs-on: ubuntu-latest
-    needs: deploy
+    needs: deploy_prod
     environment: prod_env
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout repository
@@ -92,7 +130,7 @@ jobs:
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
 
-      - name: Run taxi pipeline
+      - name: Run taxi pipeline in prod
         run: databricks bundle run taxi_pipeline --target prod
         env:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}

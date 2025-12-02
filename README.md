@@ -81,6 +81,28 @@ These can be configured when running the job via the Databricks UI or API.
 ### User-Defined Functions
 - `categorize_trip_distance`: Categorizes trips as Short (<2 miles), Medium (2-10 miles), or Long (>10 miles)
 
+## CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment with environment-specific workflows:
+
+### Pull Request Workflow (Dev Environment)
+When you create a pull request to `main`:
+1. ✅ **Run Unit Tests** - Tests must pass with 80%+ pass rate
+2. ✅ **Deploy to Dev** - Deploy bundle to dev environment
+3. ✅ **Run Pipeline in Dev** - Execute the taxi pipeline in dev for validation
+
+### Merge to Main Workflow (Prod Environment)
+When you merge to `main`:
+1. ✅ **Run Unit Tests** - Tests must pass with 80%+ pass rate
+2. ✅ **Deploy to Prod** - Deploy bundle to production environment
+3. ✅ **Run Pipeline in Prod** - Execute the taxi pipeline in production
+
+This ensures:
+- All code is tested before deployment
+- Dev environment is used for validation during PR review
+- Production deployments only happen from the main branch
+- Scheduled execution only runs in production
+
 ## Testing
 
 The project includes a comprehensive test suite following Databricks testing best practices:
