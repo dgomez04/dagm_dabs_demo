@@ -7,10 +7,64 @@ on:
     branches: ["main"]
 
 jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov pyspark
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run tests with coverage
+        run: |
+          # Run pytest with coverage and JSON output
+          pytest tests/ -v --tb=short --cov=src --cov-report=term --cov-report=json
+          
+          # Calculate pass rate
+          TOTAL_TESTS=$(pytest tests/ --collect-only -q | tail -n 1 | awk '{print $1}')
+          PASSED_TESTS=$(pytest tests/ -v --tb=line | grep -c "PASSED" || echo "0")
+          
+          # Calculate percentage
+          if [ "$TOTAL_TESTS" -gt 0 ]; then
+            PASS_RATE=$(awk "BEGIN {printf \"%.0f\", ($PASSED_TESTS / $TOTAL_TESTS) * 100}")
+            echo "Pass Rate: $PASS_RATE% ($PASSED_TESTS/$TOTAL_TESTS tests passed)"
+            
+            # Check if pass rate meets 80% threshold
+            if [ "$PASS_RATE" -lt 80 ]; then
+              echo "Test pass rate ($PASS_RATE%) is below the required 80% threshold"
+              exit 1
+            else
+              echo "Test pass rate ($PASS_RATE%) meets the required 80% threshold"
+            fi
+          else
+            echo "No tests found"
+            exit 1
+          fi
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: coverage-report
+          path: coverage.json
+
   deploy:
     name: Deploy Bundle
     runs-on: ubuntu-latest
+    needs: test
     environment: prod_env
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout repository
@@ -25,10 +79,11 @@ jobs:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
 
   run_job:
-    name: Run Finance Pipeline
+    name: Run NYC Taxi Pipeline
     runs-on: ubuntu-latest
     needs: deploy
     environment: prod_env
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout repository
@@ -37,26 +92,7 @@ jobs:
       - name: Setup Databricks CLI
         uses: databricks/setup-cli@main
 
-      - name: Run finance pipeline
-        run: databricks bundle run finance_pipeline --target prod
+      - name: Run taxi pipeline
+        run: databricks bundle run taxi_pipeline --target prod
         env:
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-
-  unit_testing:
-    name: Data Quality Tests
-    runs-on: ubuntu-latest
-    environment: prod_env
-    needs: run_job
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Databricks CLI
-        uses: databricks/setup-cli@main
-
-      - name: Run data quality tests
-        run: databricks bundle run unit_tests --target prod
-        env:
-          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-

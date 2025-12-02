@@ -1,0 +1,22 @@
+resources:
+  jobs:
+    taxi_pipeline:
+      name: "[${bundle.target}] NYC Taxi Pipeline"
+      
+      parameters:
+        - name: catalog
+          default: adb_dagm
+        - name: schema
+          default: default
+      
+      permissions:
+        - group_name: users
+          level: CAN_VIEW
+        - group_name: users
+          level: CAN_MANAGE_RUN
+
+      tasks:
+        - task_key: process_nyc_taxi_data
+          notebook_task:
+            notebook_path: ../src/taxi_ingestion.py
+
