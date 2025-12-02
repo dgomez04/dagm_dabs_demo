@@ -7,7 +7,7 @@ resources:
         - name: catalog
           default: adb_dagm
         - name: schema
-          default: default
+          default: taxi_pipeline_${bundle.target}
       
       permissions:
         - group_name: users

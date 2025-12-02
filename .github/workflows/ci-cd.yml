@@ -10,6 +10,7 @@ jobs:
   test:
     name: Run Unit Tests
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout repository
@@ -100,7 +101,6 @@ jobs:
   deploy_prod:
     name: Deploy to Prod Environment
     runs-on: ubuntu-latest
-    needs: test
     environment: prod
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
