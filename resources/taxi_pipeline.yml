@@ -5,7 +5,7 @@ resources:
       
       parameters:
         - name: catalog
-          default: adb_dagm
+          default: testing
         - name: schema
           default: taxi_pipeline_${bundle.target}
       
